@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scroll Trap — Social Media & Youth Identity</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,600;1,9..40,300&family=Playfair+Display:ital@1&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --card: #16161f;
+      --accent1: #e8ff47;
+      --accent2: #ff4d6d;
+      --accent3: #47c9ff;
+      --text: #f0eee8;
+      --muted: #888899;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.08em;
+      color: var(--accent1);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent1); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 4rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,255,71,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,255,71,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(232,255,71,0.08) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero-glow2 {
+      position: absolute;
+      bottom: -100px; left: 10%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(255,77,109,0.07) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--accent1);
+      color: #0a0a0f;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.9rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      width: fit-content;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 11vw, 10rem);
+      line-height: 0.92;
+      letter-spacing: 0.01em;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+
+    .hero h1 em {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--accent1);
+    }
+
+    .hero-sub {
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      border-radius: 3px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent1);
+      color: #0a0a0f;
+    }
+    .btn-primary:hover { background: #d4eb2e; transform: translateY(-2px); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--accent1); color: var(--accent1); }
+
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 2rem; right: 4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      animation: fadeUp 1s 0.5s ease both;
+    }
+
+    .scroll-line {
+      width: 40px;
+      height: 1px;
+      background: var(--muted);
+      position: relative;
+      overflow: hidden;
+    }
+    .scroll-line::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: var(--accent1);
+      animation: scrollLine 2s 1s ease-in-out infinite;
+    }
+
+    /* ── STATS BAND ── */
+    .stats-band {
+      background: var(--accent1);
+      padding: 1.2rem 4rem;
+      display: flex;
+      gap: 4rem;
+      overflow-x: auto;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+      color: #0a0a0f;
+    }
+
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      max-width: 120px;
+      line-height: 1.3;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 40px;
+      background: rgba(0,0,0,0.15);
+    }
+
+    /* ── SECTION LAYOUT ── */
+    section {
+      padding: 7rem 4rem;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .section-label::before {
+      content: '';
+      width: 24px;
+      height: 1px;
+      background: var(--accent2);
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      line-height: 1;
+      letter-spacing: 0.02em;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title span { color: var(--accent1); }
+
+    .section-body {
+      max-width: 680px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    /* ── INTRO ── */
+    #intro {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+      background: var(--surface);
+    }
+
+    .intro-visual {
+      position: relative;
+    }
+
+    .phone-mockup {
+      width: 200px;
+      height: 380px;
+      background: var(--card);
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+    }
+
+    .phone-notch {
+      width: 80px;
+      height: 20px;
+      background: var(--bg);
+      border-radius: 0 0 14px 14px;
+      margin: 0 auto;
+    }
+
+    .phone-feed {
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .feed-item {
+      background: var(--surface);
+      border-radius: 8px;
+      height: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feed-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(232,255,71,0.05), rgba(255,77,109,0.05));
+    }
+
+    .feed-dot {
+      position: absolute;
+      top: 8px; left: 8px;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+    }
+
+    .feed-lines {
+      position: absolute;
+      top: 8px; left: 40px; right: 8px;
+    }
+
+    .feed-line {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      margin-bottom: 5px;
+    }
+
+    .feed-line:nth-child(2) { width: 60%; }
+
+    .phone-float-card {
+      position: absolute;
+      right: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      min-width: 160px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .float-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+
+    .float-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      color: var(--accent2);
+    }
+
+    /* ── ISSUES GRID ── */
+    #issues {
+      background: var(--bg);
+    }
+
+    .issues-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px;
+      margin-top: 4rem;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .issue-card {
+      background: var(--bg);
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+
+    .issue-card:hover {
+      background: var(--card);
+    }
+
+    .issue-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      transition: transform 0.3s;
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+
+    .issue-card:hover::before { transform: scaleX(1); }
+
+    .issue-card.c1::before { background: var(--accent1); }
+    .issue-card.c2::before { background: var(--accent2); }
+    .issue-card.c3::before { background: var(--accent3); }
+
+    .issue-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem;
+      color: var(--border);
+      line-height: 1;
+      margin-bottom: 1rem;
+      transition: color 0.3s;
+    }
+
+    .issue-card:hover .issue-num { color: rgba(255,255,255,0.06); }
+
+    .issue-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .issue-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 1rem;
+    }
+
+    .issue-card.c1 .issue-title { color: var(--accent1); }
+    .issue-card.c2 .issue-title { color: var(--accent2); }
+    .issue-card.c3 .issue-title { color: var(--accent3); }
+
+    .issue-text {
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.7;
+    }
+
+    .issue-stat {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .issue-stat strong {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .issue-card.c1 .issue-stat strong { color: var(--accent1); }
+    .issue-card.c2 .issue-stat strong { color: var(--accent2); }
+    .issue-card.c3 .issue-stat strong { color: var(--accent3); }
+
+    /* ── QUOTE BLOCK ── */
+    .quote-section {
+      background: var(--accent2);
+      padding: 5rem 4rem;
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .quote-mark {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 8rem;
+      line-height: 0.8;
+      color: rgba(0,0,0,0.15);
+    }
+
+    .quote-text {
+      font-size: clamp(1.3rem, 2.5vw, 2rem);
+      line-height: 1.4;
+      color: #fff;
+      font-weight: 300;
+    }
+
+    .quote-text em {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+    }
+
+    .quote-source {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ── COMPARISON CULTURE ── */
+    #comparison {
+      background: var(--surface);
+    }
+
+    .comparison-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+      margin-top: 4rem;
+    }
+
+    .comparison-left p {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .comparison-right {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .video-embed-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .video-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .video-label::before {
+      content: '';
+      width: 16px;
+      height: 1px;
+      background: var(--accent1);
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .video-container:hover {
+      border-color: rgba(232,255,71,0.35);
+    }
+
+    .video-container iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 8px;
+    }
+
+    .video-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      background: var(--card);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .video-placeholder:hover { background: #1c1c27; }
+
+    .video-play-btn {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--accent1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+
+    .video-placeholder:hover .video-play-btn { transform: scale(1.08); }
+
+    .video-play-btn svg {
+      width: 22px; height: 22px;
+      fill: #0a0a0f;
+      margin-left: 3px;
+    }
+
+    .video-placeholder-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      text-align: center;
+      max-width: 260px;
+    }
+
+    .video-placeholder-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .video-input-row {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    .video-input {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.65rem 1rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .video-input::placeholder { color: var(--muted); }
+    .video-input:focus { border-color: rgba(232,255,71,0.4); }
+
+    .video-embed-btn {
+      background: var(--accent1);
+      color: #0a0a0f;
+      border: none;
+      border-radius: 4px;
+      padding: 0.65rem 1.2rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .video-embed-btn:hover { background: #d4eb2e; }
+
+    .video-note {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── ALGORITHM ── */
+    #algorithm {
+      background: var(--bg);
+    }
+
+    .algo-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+      margin-top: 4rem;
+    }
+
+    .algo-right p {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .algo-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .algo-step {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 1.5rem;
+      position: relative;
+    }
+
+    .algo-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 36px; left: 19px;
+      width: 2px;
+      height: calc(100% + 0px);
+      background: var(--border);
+    }
+
+    .algo-dot {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      border: 2px solid var(--border);
+      color: var(--muted);
+      background: var(--bg);
+      z-index: 1;
+      flex-shrink: 0;
+    }
+
+    .algo-content {
+      padding-bottom: 2.5rem;
+    }
+
+    .algo-content h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .algo-content p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    /* ── MENTAL HEALTH ── */
+    #mentalhealth {
+      background: var(--surface);
+    }
+
+    .mh-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      margin-top: 4rem;
+      background: var(--border);
+    }
+
+    .mh-card {
+      background: var(--surface);
+      padding: 2.5rem;
+      position: relative;
+    }
+
+    .mh-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .mh-card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.75rem;
+      color: var(--accent3);
+    }
+
+    .mh-card p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+
+    .mh-highlight {
+      background: var(--bg);
+      grid-column: 1 / -1;
+      padding: 3rem;
+      border-left: 4px solid var(--accent3);
+    }
+
+    .mh-highlight p {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 700px;
+    }
+
+    /* ── SOLUTIONS ── */
+    #solutions {
+      background: var(--bg);
+    }
+
+    .solutions-intro {
+      max-width: 600px;
+      color: var(--muted);
+      margin-top: 1rem;
+      font-size: 1.05rem;
+    }
+
+    .solutions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .sol-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .sol-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(232,255,71,0.25);
+    }
+
+    .sol-step {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.5rem;
+      color: rgba(232,255,71,0.08);
+      line-height: 1;
+      position: absolute;
+      top: 0.5rem; right: 1rem;
+    }
+
+    .sol-emoji { font-size: 1.8rem; margin-bottom: 1rem; }
+
+    .sol-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .sol-card p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.65;
+    }
+
+    .sol-tag {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent1);
+      border: 1px solid rgba(232,255,71,0.3);
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+    }
+
+    /* ── RESEARCH ── */
+    #research {
+      background: var(--surface);
+    }
+
+    .research-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .source-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2rem;
+      transition: border-color 0.2s;
+    }
+
+    .source-card:hover { border-color: rgba(71,201,255,0.3); }
+
+    .source-type {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent3);
+      margin-bottom: 0.6rem;
+    }
+
+    .source-card h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      line-height: 1.4;
+    }
+
+    .source-card p {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.65;
+    }
+
+    .source-author {
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 3rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .footer-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      color: var(--accent1);
+      letter-spacing: 0.08em;
+    }
+
+    .footer-sub {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 0.3rem;
+    }
+
+    .footer-right {
+      text-align: right;
+    }
+
+    .footer-author {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .footer-course {
+      font-size: 0.78rem;
+      color: rgba(136,136,153,0.6);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scrollLine {
+      0% { left: -100%; }
+      50% { left: 0; }
+      100% { left: 100%; }
+    }
+
+    @keyframes growBar {
+      from { width: 0; }
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      section { padding: 5rem 1.5rem; }
+      .hero { padding: 0 1.5rem 4rem; }
+      #intro { grid-template-columns: 1fr; }
+      .intro-visual { display: none; }
+      .issues-grid { grid-template-columns: 1fr; }
+      .comparison-layout { grid-template-columns: 1fr; }
+      .algo-layout { grid-template-columns: 1fr; }
+      .mh-grid { grid-template-columns: 1fr; }
+      .solutions-grid { grid-template-columns: 1fr; }
+      .research-grid { grid-template-columns: 1fr; }
+      footer { grid-template-columns: 1fr; }
+      .footer-right { text-align: left; }
+      .stats-band { padding: 1rem 1.5rem; }
+      .quote-section { padding: 3rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-logo" href="#top">SCROLL TRAP</a>
+  <ul class="nav-links">
+    <li><a href="#intro">Overview</a></li>
+    <li><a href="#issues">Issues</a></li>
+    <li><a href="#comparison">Comparison</a></li>
+    <li><a href="#algorithm">Algorithms</a></li>
+    <li><a href="#mentalhealth">Mental Health</a></li>
+    <li><a href="#solutions">Solutions</a></li>
+    <li><a href="#research">Research</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero" id="top">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <div class="hero-tag">Digital Identity & Gen Z</div>
+
+  <h1>How Social<br/>Media <em>Reshapes</em><br/>Who You Are</h1>
+
+  <p class="hero-sub">
+    Platforms designed for connection are quietly rewriting how Gen Z forms identity — through comparison, FOMO, and algorithmic distortion. This is what the research says.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#intro" class="btn btn-primary">Explore the Issue</a>
+    <a href="#solutions" class="btn btn-outline">Find Solutions</a>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <span>Scroll to begin</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ── STATS BAND ── -->
+<div class="stats-band">
+  <div class="stat-item">
+    <div class="stat-num">3+</div>
+    <div class="stat-label">Hours daily avg. teen screen time on social media</div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat-item">
+    <div class="stat-num">40%</div>
+    <div class="stat-label">Of teens report feeling worse about themselves after scrolling</div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat-item">
+    <div class="stat-num">70%</div>
+    <div class="stat-label">Of Gen Z report social media affects their mental health</div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat-item">
+    <div class="stat-num">2.6B</div>
+    <div class="stat-label">Social media users worldwide exposed to algorithmic feeds</div>
+  </div>
+</div>
+
+<!-- ── INTRO ── -->
+<section id="intro">
+  <div class="intro-text reveal">
+    <div class="section-label">The Problem</div>
+    <h2 class="section-title">Social media was supposed to <span>connect</span> us.</h2>
+    <p class="section-body" style="margin-bottom:1.2rem;">
+      In this age of technology, social media has become a ubiquitous part of everyday life. As the number of people using platforms like TikTok, Instagram, and Snapchat has skyrocketed, so has the number of people experiencing anxiety, depression, and identity distortion.
+    </p>
+    <p class="section-body" style="margin-bottom:1.2rem;">
+      While social media can provide an opportunity to stay connected and informed, excessive use can have a damaging effect on an individual's mental health — particularly for youth whose brains are still developing. Teenagers do not yet have a fully formed cerebral cortex, the region key for thinking, problem-solving, and separating reality from fiction.
+    </p>
+    <p class="section-body">
+      This website explores the science behind that harm — and more importantly, what you can do about it.
+    </p>
+  </div>
+
+  <div class="intro-visual reveal">
+    <div class="phone-mockup">
+      <div class="phone-notch"></div>
+      <div class="phone-feed">
+        <div class="feed-item" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">
+          <div class="feed-dot" style="background:#ff4d6d;"></div>
+          <div class="feed-lines">
+            <div class="feed-line" style="background:rgba(255,77,109,0.4);"></div>
+            <div class="feed-line" style="background:rgba(255,255,255,0.1);"></div>
+          </div>
+        </div>
+        <div class="feed-item" style="background:linear-gradient(135deg,#0d1b2a,#1b2838);">
+          <div class="feed-dot" style="background:#e8ff47;"></div>
+          <div class="feed-lines">
+            <div class="feed-line" style="background:rgba(232,255,71,0.3);"></div>
+            <div class="feed-line" style="background:rgba(255,255,255,0.1);"></div>
+          </div>
+        </div>
+        <div class="feed-item" style="background:linear-gradient(135deg,#1a0a0f,#2a0d1a);">
+          <div class="feed-dot" style="background:#47c9ff;"></div>
+          <div class="feed-lines">
+            <div class="feed-line" style="background:rgba(71,201,255,0.35);"></div>
+            <div class="feed-line" style="background:rgba(255,255,255,0.1);"></div>
+          </div>
+        </div>
+        <div class="feed-item" style="background:linear-gradient(135deg,#0f1a0a,#1a2e0d);">
+          <div class="feed-dot" style="background:#ff9f47;"></div>
+          <div class="feed-lines">
+            <div class="feed-line" style="background:rgba(255,159,71,0.35);"></div>
+            <div class="feed-line" style="background:rgba(255,255,255,0.1);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-float-card">
+      <div class="float-label">Identity affected</div>
+      <div class="float-val" style="color:var(--accent2);">↑ 73%</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ISSUES GRID ── -->
+<section id="issues">
+  <div class="reveal">
+    <div class="section-label">Three Core Issues</div>
+    <h2 class="section-title">The Mechanisms of <span>Harm</span></h2>
+  </div>
+
+  <div class="issues-grid">
+    <div class="issue-card c1 reveal">
+      <div class="issue-num">01</div>
+      <div class="issue-title">Addiction & the Dopamine Loop</div>
+      <p class="issue-text">
+        Social media works like a slot machine. The infinite scroll makes users more engaged with the endless possibility of what could happen. Studies show social media activates the brain's reward center by releasing dopamine — the same chemical linked to drug use. Once the dopamine cycle starts, the brain craves it relentlessly, creating full-blown behavioral addiction.
+      </p>
+      <p class="issue-text" style="margin-top:0.8rem;">
+        Users become addicted to seeking ego boosts — likes, comments, views — from strangers on the internet. This keeps them scrolling instead of engaging in more productive, fulfilling activities.
+      </p>
+      <div class="issue-stat">
+        <strong>∞ Scroll</strong>
+        Infinite feed design intentionally engineered to maximize engagement time
+      </div>
+    </div>
+
+    <div class="issue-card c2 reveal">
+      <div class="issue-num">02</div>
+      <div class="issue-title">FOMO & Sleep Deprivation</div>
+      <p class="issue-text">
+        Fear of Missing Out (FOMO) leads to anxiety and depression as people feel inadequate after comparing their "ordinary" lives to the curated highlights they see online. The compulsion to stay updated means many teens lose sleep scrolling late into the night.
+      </p>
+      <p class="issue-text" style="margin-top:0.8rem;">
+        Not getting enough sleep leads to memory problems, difficulty concentrating, and reduced serotonin — a neurotransmitter tied directly to emotional regulation and feelings of happiness. Less sleep creates more anxious feelings, which drives more scrolling — a vicious cycle.
+      </p>
+      <div class="issue-stat">
+        <strong style="color:var(--accent2);">1 in 3</strong>
+        Teens report losing sleep due to late-night social media use
+      </div>
+    </div>
+
+    <div class="issue-card c3 reveal">
+      <div class="issue-num">03</div>
+      <div class="issue-title">Unrealistic Expectations</div>
+      <p class="issue-text">
+        Filters are everywhere — on Instagram, Snapchat, and TikTok. As they become more sophisticated, users struggle to distinguish them from reality. Plastic surgeons have reported increases in patients requesting procedures to look like filtered versions of themselves — a phenomenon sometimes called "Snapchat dysmorphia."
+      </p>
+      <p class="issue-text" style="margin-top:0.8rem;">
+        Too many people base their self-worth on the number of likes they receive, leading to an unhealthy self-perception tethered entirely to online approval rather than internal values.
+      </p>
+      <div class="issue-stat">
+        <strong style="color:var(--accent3);">+32%</strong>
+        Rise in cosmetic procedure inquiries linked to filter-driven self-image
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── QUOTE ── -->
+<div class="quote-section">
+  <div class="quote-mark">"</div>
+  <div>
+    <p class="quote-text">
+      Too many people are dependent on the approval of social media and others, leading to an <em>unhealthy self-perception</em> based on the number of likes they receive.
+    </p>
+    <p class="quote-source">— C.M. Stabler, Lancaster General Health, 2021</p>
+  </div>
+</div>
+
+<!-- ── COMPARISON ── -->
+<section id="comparison">
+  <div class="reveal">
+    <div class="section-label">Identity Under Pressure</div>
+    <h2 class="section-title">Comparison <span>Culture</span></h2>
+  </div>
+
+  <div class="comparison-layout">
+    <div class="comparison-left reveal">
+      <p>
+        Social media platforms are built around comparison. Every scroll exposes users to curated highlight reels — perfectly staged lives, bodies, achievements, and relationships that most people can't replicate.
+      </p>
+      <p>
+        This constant exposure to idealized images creates a distorted lens through which young people evaluate their own worth. Research shows that algorithmic systems don't just reflect identity — they actively <strong style="color:var(--text);">construct and distort it</strong>, particularly for marginalized communities.
+      </p>
+      <p>
+        Scholar Safiya Umoja Noble argues in <em>Algorithms of Oppression</em> that platforms reinforce racial and gender bias, shaping how marginalized identities are represented and perceived. The harm isn't just psychological — it's structural.
+      </p>
+      <p>
+        Similarly, Lisa Nakamura's research highlights how people of color and women use digital spaces to resist dominant narratives — creating cultural artifacts and community to reclaim their identities online.
+      </p>
+    </div>
+
+    <div class="comparison-right reveal">
+      <div class="video-embed-wrap">
+        <div class="video-label">Watch: Comparison Culture Explained</div>
+
+        <div class="video-container">
+          <a href="https://www.youtube.com/watch?v=iyBO6v-A038" target="_blank" rel="noopener" style="display:block;position:absolute;inset:0;text-decoration:none;">
+            <img
+              src="https://img.youtube.com/vi/iyBO6v-A038/maxresdefault.jpg"
+              alt="Comparison Culture video thumbnail"
+              style="width:100%;height:100%;object-fit:cover;display:block;border-radius:8px;"
+              onerror="this.src='https://img.youtube.com/vi/iyBO6v-A038/hqdefault.jpg'"
+            />
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.75rem;background:rgba(0,0,0,0.35);border-radius:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.5)'" onmouseout="this.style.background='rgba(0,0,0,0.35)'">
+              <div style="width:64px;height:64px;border-radius:50%;background:var(--accent1);display:flex;align-items:center;justify-content:center;">
+                <svg viewBox="0 0 24 24" width="24" height="24" style="fill:#0a0a0f;margin-left:3px;"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+              <span style="color:#fff;font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Watch on YouTube</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ALGORITHM ── -->
+<section id="algorithm">
+  <div class="algo-layout">
+    <div class="algo-left reveal">
+      <div class="section-label">How It Works</div>
+      <h2 class="section-title">The <span>Algorithm</span> Trap</h2>
+
+      <div class="algo-timeline" style="margin-top:3rem;">
+        <div class="algo-step">
+          <div class="algo-dot" style="border-color:var(--accent1);color:var(--accent1);">1</div>
+          <div class="algo-content">
+            <h4>You open the app</h4>
+            <p>The algorithm immediately serves you content based on past behavior, keeping you engaged within seconds.</p>
+          </div>
+        </div>
+        <div class="algo-step">
+          <div class="algo-dot" style="border-color:var(--accent2);color:var(--accent2);">2</div>
+          <div class="algo-content">
+            <h4>Dopamine triggers</h4>
+            <p>Likes, comments, and new posts release dopamine — the same reward chemical activated by addictive substances.</p>
+          </div>
+        </div>
+        <div class="algo-step">
+          <div class="algo-dot" style="border-color:var(--accent3);color:var(--accent3);">3</div>
+          <div class="algo-content">
+            <h4>Identity distortion begins</h4>
+            <p>Repeated exposure to curated, filtered, or algorithmically-biased content rewires how you perceive yourself and others.</p>
+          </div>
+        </div>
+        <div class="algo-step">
+          <div class="algo-dot" style="border-color:var(--accent1);color:var(--accent1);">4</div>
+          <div class="algo-content">
+            <h4>The loop closes</h4>
+            <p>The platform profits. You crave more. The identity you're constructing online increasingly replaces the one you have offline.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="algo-right reveal">
+      <div class="section-label" style="margin-top:5rem;">The Structural Problem</div>
+      <h3 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;margin-bottom:1.5rem;letter-spacing:0.04em;">It's not just about <span style="color:var(--accent1);">screen time</span></h3>
+      <p>
+        A common misconception is that social media harm is simply a matter of spending too many hours online. The reality is more complex — and more systemic.
+      </p>
+      <p>
+        Algorithms are not neutral. Research by Safiya Umoja Noble shows that search engines and social platforms actively reinforce racial and gender stereotypes, shaping how communities are seen and how they see themselves. The identity damage isn't accidental — it's embedded in the architecture.
+      </p>
+      <p>
+        For teens — whose cerebral cortex (the region governing judgment, reasoning, and self-awareness) is still developing — this exposure can be especially formative. They haven't yet built the cognitive scaffolding to critically evaluate what they're seeing, making them particularly vulnerable to internalizing unrealistic standards.
+      </p>
+      <p>
+        Understanding that this is a design problem — not just a willpower problem — is the first step toward meaningful change.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── MENTAL HEALTH ── -->
+<section id="mentalhealth">
+  <div class="reveal">
+    <div class="section-label">The Psychological Impact</div>
+    <h2 class="section-title">What It Does to <span>Your Brain</span></h2>
+  </div>
+
+  <div class="mh-grid" style="margin-top:4rem;">
+    <div class="mh-card reveal">
+      <div class="mh-icon">😰</div>
+      <h3>Anxiety</h3>
+      <p>FOMO, social comparison, and the pressure to respond to notifications creates a constant state of low-grade anxiety. Many teens report feeling physically anxious when separated from their phones — a hallmark of behavioral dependence.</p>
+    </div>
+
+    <div class="mh-card reveal">
+      <div class="mh-icon">😞</div>
+      <h3>Depression</h3>
+      <p>Repeated upward social comparison — seeing others with more followers, a "better" body, or a seemingly more exciting life — correlates strongly with depressive symptoms. The emotional toll compounds when users receive fewer likes or engagement than expected.</p>
+    </div>
+
+    <div class="mh-card reveal">
+      <div class="mh-icon">🪞</div>
+      <h3>Distorted Self-Image</h3>
+      <p>Exposure to heavily filtered images has been linked to body dysmorphia and lowered self-esteem. Users begin to see their unfiltered appearance as a flaw rather than their natural state. This is especially acute for girls and gender-diverse youth.</p>
+    </div>
+
+    <div class="mh-card reveal">
+      <div class="mh-icon">🌙</div>
+      <h3>Sleep Disruption</h3>
+      <p>Late-night scrolling disrupts circadian rhythms and reduces serotonin production. Poor sleep compounds mental health struggles, reduces academic performance, and impairs memory consolidation — creating a downward spiral that's hard to break without intervention.</p>
+    </div>
+
+    <div class="mh-highlight reveal">
+      <p>
+        <strong style="color:var(--text);">The neuroscience is clear:</strong> social media activates the same neural pathways as addictive substances. Serotonin and dopamine — both critical to mood stability and emotional regulation — are disrupted by excessive platform use. For teens with developing brains, this neurological disruption during a critical growth window can have lasting consequences.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── SOLUTIONS ── -->
+<section id="solutions">
+  <div class="reveal">
+    <div class="section-label">Taking Back Control</div>
+    <h2 class="section-title">You Can Change <span>This</span></h2>
+    <p class="solutions-intro">
+      The goal isn't to delete social media forever — it's to use it intentionally. Here's a realistic, step-by-step approach to digital self-awareness.
+    </p>
+  </div>
+
+  <div class="solutions-grid">
+    <div class="sol-card reveal">
+      <div class="sol-step">01</div>
+      <div class="sol-emoji">⏱️</div>
+      <h3>Set Screen Time Limits</h3>
+      <p>Use built-in tools like iPhone Screen Time or Android Digital Wellbeing to set daily limits per app. Start with 30 minutes less than your current average and adjust weekly.</p>
+      <span class="sol-tag">Digital Boundaries</span>
+    </div>
+
+    <div class="sol-card reveal">
+      <div class="sol-step">02</div>
+      <div class="sol-emoji">✂️</div>
+      <h3>Curate Your Feed</h3>
+      <p>Unfollow accounts that make you feel worse about yourself. Actively follow creators whose content is educational, uplifting, or genuinely aligned with your values — not just aspirational.</p>
+      <span class="sol-tag">Intentional Use</span>
+    </div>
+
+    <div class="sol-card reveal">
+      <div class="sol-step">03</div>
+      <div class="sol-emoji">🧠</div>
+      <h3>Practice Media Literacy</h3>
+      <p>Before scrolling, remind yourself: filters exist, highlight reels are curated, and algorithms show you what keeps you engaged — not what's real. Develop the habit of questioning what you see.</p>
+      <span class="sol-tag">Critical Thinking</span>
+    </div>
+
+    <div class="sol-card reveal">
+      <div class="sol-step">04</div>
+      <div class="sol-emoji">📵</div>
+      <h3>Create Phone-Free Zones</h3>
+      <p>Designate specific times or places — meals, the hour before sleep, the first 30 minutes of your morning — as phone-free. Protect these spaces fiercely.</p>
+      <span class="sol-tag">Offline Life</span>
+    </div>
+
+    <div class="sol-card reveal">
+      <div class="sol-step">05</div>
+      <div class="sol-emoji">🤝</div>
+      <h3>Invest in Real Relationships</h3>
+      <p>Social media creates a false sense of connection. Prioritize face-to-face interaction. Research shows in-person social connection is far more effective at reducing loneliness and building self-esteem.</p>
+      <span class="sol-tag">Real Connection</span>
+    </div>
+
+    <div class="sol-card reveal">
+      <div class="sol-step">06</div>
+      <div class="sol-emoji">✍️</div>
+      <h3>Document Your Offline Life</h3>
+      <p>Journal, sketch, create — offline. Build an identity and creative practice that exists completely independently of likes, views, and external validation. Your worth isn't a metric.</p>
+      <span class="sol-tag">Self-Expression</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── RESEARCH ── -->
+<section id="research">
+  <div class="reveal">
+    <div class="section-label">Sources & Research</div>
+    <h2 class="section-title">The <span>Evidence</span> Behind This</h2>
+  </div>
+
+  <div class="research-grid">
+    <div class="source-card reveal">
+      <div class="source-type">Book · Critical Race & Technology Studies</div>
+      <h4>Algorithms of Oppression: How Search Engines Reinforce Racism</h4>
+      <p>Noble argues that digital platforms are not neutral tools but systems that reinforce racial and gender bias. Algorithms prioritize content that amplifies stereotypes, shaping how marginalized communities are represented — and how they see themselves. Identity harm online is not only psychological but structural.</p>
+      <p class="source-author">Safiya Umoja Noble — NYU Press, 2018</p>
+    </div>
+
+    <div class="source-card reveal">
+      <div class="source-type">Clinical Article · Psychiatry</div>
+      <h4>Social Media and Your Mental Health</h4>
+      <p>Outlines how social media affects mental health through anxiety, depression, and compulsive usage. Platform design intentionally encourages prolonged engagement through dopamine reward cycles. Highlights how comparison culture and exposure to curated lives damages self-perception and identity.</p>
+      <p class="source-author">McLean Hospital — January 2023</p>
+    </div>
+
+    <div class="source-card reveal">
+      <div class="source-type">Medical Article · Health System</div>
+      <h4>The Effects of Social Media on Mental Health</h4>
+      <p>Excessive social media use contributes to anxiety, depression, and decreased self-esteem. Curated online identities create unrealistic standards that individuals internalize, leading to identity insecurity. Frames social media as a behavioral public health issue requiring structural attention.</p>
+      <p class="source-author">C.M. Stabler — Lancaster General Health, 2021</p>
+    </div>
+
+    <div class="source-card reveal">
+      <div class="source-type">Article · Digital Culture Studies</div>
+      <h4>How People of Color and Women Use Internet & Digital Media</h4>
+      <p>Introduces Lisa Nakamura's research showing that marginalized users actively create visual cultures online rather than being passive consumers. Custom avatars, petitions, and community artifacts are used to resist or reframe dominant representations — demonstrating that digital identity is also a site of resistance.</p>
+      <p class="source-author">Andrea Lynn — University of Illinois, 2008</p>
+    </div>
+
+    <div class="source-card reveal">
+      <div class="source-type">Journalism · Counterargument</div>
+      <h4>More Social Media, Not Less</h4>
+      <p>Peterson argues social media can positively impact teens by increasing connection and helping those with anxiety feel more comfortable communicating. Provides a counterargument — that social media offers community and confidence-building opportunities — while acknowledging risks of perfectionism and external validation dependency.</p>
+      <p class="source-author">A. Peterson — ProQuest / Wall Street Journal, 2019</p>
+    </div>
+
+    <div class="source-card reveal">
+      <div class="source-type">Health Article · Sleep Science</div>
+      <h4>Sleep and Social Media</h4>
+      <p>Examines how social media addiction — particularly FOMO-driven late-night scrolling — disrupts sleep cycles. Reduced sleep leads to serotonin deficiency, memory problems, poor academic performance, and increased anxiety. Establishes a direct biological link between platform use and neurological harm.</p>
+      <p class="source-author">R. Newsom — Sleep Foundation, December 2022</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div>
+    <div class="footer-brand">Scroll Trap</div>
+    <div class="footer-sub">A research website on social media & youth identity.</div>
+  </div>
+  <div class="footer-right">
+    <div class="footer-author">Jasnoor Chimni</div>
+    <div class="footer-course">ENGL 131 · University of Washington · 2026</div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Staggered card reveals
+  document.querySelectorAll('.issues-grid .issue-card, .solutions-grid .sol-card, .research-grid .source-card').forEach((card, i) => {
+    card.style.transitionDelay = `${(i % 3) * 0.1}s`;
+  });
+
+  // Video embed
+  function embedVideo() {
+    const input = document.getElementById('videoUrlInput').value.trim();
+    const container = document.getElementById('videoContainer');
+
+    let videoId = null;
+
+    // Match standard youtube.com/watch?v=ID
+    const watchMatch = input.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+    // Match youtu.be/ID
+    const shortMatch = input.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+    // Match youtube.com/embed/ID
+    const embedMatch = input.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/);
+
+    if (watchMatch) videoId = watchMatch[1];
+    else if (shortMatch) videoId = shortMatch[1];
+    else if (embedMatch) videoId = embedMatch[1];
+
+    if (!videoId) {
+      document.getElementById('videoUrlInput').style.borderColor = 'var(--accent2)';
+      document.getElementById('videoUrlInput').placeholder = '⚠ Please enter a valid YouTube URL';
+      setTimeout(() => {
+        document.getElementById('videoUrlInput').style.borderColor = '';
+        document.getElementById('videoUrlInput').placeholder = 'Paste YouTube URL here (e.g. https://youtube.com/watch?v=...)';
+      }, 2500);
+      return;
+    }
+
+    container.innerHTML = `<iframe
+      src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1"
+      title="Comparison Culture Video"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+    ></iframe>`;
+  }
+
+  // Allow pressing Enter in input
+  document.getElementById('videoUrlInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') embedVideo();
+  });
+</script>
+</body>
+</html>
